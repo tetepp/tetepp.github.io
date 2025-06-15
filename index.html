@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M&R Shoes - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 420px;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .logo-container {
+            background: linear-gradient(135deg, #D4AF37,  #F5F0E4);
+            padding: 40px 20px 30px;
+        }
+
+        .logo {
+            max-width: 220px;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .logo-text {
+            color: black;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-top: 15px;
+            text-transform: uppercase;
+        }
+
+        .tagline {
+            color: black;
+            font-size: 14px;
+            letter-spacing: 1.5px;
+            margin-top: 8px;
+            font-weight: 500;
+        }
+
+        .login-form {
+            padding: 40px 30px;
+        }
+
+        .form-title {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            background-color: #f9f9f9;
+            transition: all 0.3s ease;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
+        }
+
+        .btn-login {
+            background: linear-gradient(135deg, #D4AF37,  #F5F0E4);
+            color: black;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(to right, #333333, #555555);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .error-message {
+            color: #d32f2f;
+            background-color: #ffcdd2;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: none;
+            font-weight: 500;
+        }
+
+        .footer {
+            padding: 20px;
+            background-color: #f8f8f8;
+            color: #777;
+            font-size: 14px;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                max-width: 100%;
+            }
+            
+            .login-form {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-container">
+            <div class="logo-text">M&R</div>
+            <div class="tagline">PASSOS QUE DEFINEM ESTILO</div>
+        </div>
+        
+        <form class="login-form" id="loginForm">
+            <h2 class="form-title">Acesse sua conta</h2>
+            
+            <div class="error-message" id="errorMessage">
+                Credenciais inválidas! Tente novamente.
+            </div>
+            
+            <div class="input-group">
+                <label for="usuario">Usuário</label>
+                <select id="usuario" required>
+                    <option value="" disabled selected>Selecione seu usuário</option>
+                    <option value="gerente">Gerente de Loja</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" placeholder="Digite sua senha" required>
+            </div>
+            
+            <button type="submit" class="btn-login">Entrar</button>
+        </form>
+        
+        <div class="footer">
+            &copy; 2023 M&R Shoes. Todos os direitos reservados.
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Obtém os valores do formulário
+            const usuario = document.getElementById('usuario').value;
+            const senha = document.getElementById('senha').value;
+            
+            // Valores válidos (em produção isso seria no servidor)
+            const usuariosValidos = {
+                "gerente": "mara",
+            };
+            
+            // Verifica as credenciais
+            if (usuariosValidos[usuario] && usuariosValidos[usuario] === senha) {
+                // Redireciona para estoque.html
+                window.location.href = 'estoque/estoque.html';
+            } else {
+                // Mostra mensagem de erro
+                document.getElementById('errorMessage').style.display = 'block';
+                
+                document.getElementById('senha').value = '';
+                
+                // Adiciona animação de erro
+                document.getElementById('senha').style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    document.getElementById('senha').style.animation = '';
+                }, 500);
+            }
+        });
+        
+        // Adiciona estilos de animação
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

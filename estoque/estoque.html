@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="estilo.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>M&R Shoes</title>
+</head>
+<body>
+    <section id="produtos">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <div class="container-fluid">
+                <img src="logo M&R Shoes.jpg" alt="" id="logo">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <div class="navbar-nav w-100">
+                        <a class="nav-link active" href="#produtos">Produtos</a>
+                        <a class="nav-link" href="#cadastro-produtos">Cadastro</a>
+                        <a class="nav-link" href="#backup">Backup</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <header class="header text-center" style="margin-bottom: 7px;">
+            <div class="estoque-list container">
+                <h1 class="display-4 fw-bold" id="titulo-estoque">Estoque Atual: <span id="total-itens">0</span> pares</h1>
+            </div>
+        </header>
+
+        <div class="total-filtros">
+            <h2 style="text-align: center; font-size: 25px;">FILTRAR ESTOQUE</h2>
+            <div class="filtros">
+    	        <div class="form-group">
+        	        <label for="filtro-modelo">MODELO:</label>
+        	        <input type="text" id="filtro-modelo" placeholder="Digite um modelo">
+    	        </div>
+    	        <div class="form-group">
+        	        <label for="filtro-cor">COR:</label>
+        	        <input type="text" id="filtro-cor" placeholder="Digite uma cor">
+    	        </div>
+    	        <div class="form-group">
+        	        <label for="filtro-numeracao">NUMERAÇÃO:</label>
+        	        <select id="filtro-numeracao">
+                        <option value="">Selecione</option>
+				        <option value="33">33</option>
+            	        <option value="34">34</option>
+            	        <option value="35">35</option>
+            	        <option value="36">36</option>
+            	        <option value="37">37</option>
+            	        <option value="38">38</option>
+            	        <option value="39">39</option>
+            	        <option value="40">40</option>
+            	        <option value="41">41</option>
+            	        <option value="42">42</option>
+            	        <option value="43">43</option>
+            	        <option value="44">44</option>
+        	        </select>
+    	        </div>
+                <div id="buttons-filtro">
+    	            <button class="btn btn-outline-primary" onclick="filtrarEstoque()">Aplicar Filtros</button>
+    	            <button class="btn btn-outline-danger" onclick="limparFiltros()">Limpar Filtros</button>
+                </div>
+	        </div>
+            
+        </div>
+        
+        <div class="row" id="listaSapatos"></div>
+    </section>
+
+    <section id="cadastro-produtos">
+        <header class="header text-center">
+            <div class="container">
+                <h1 class="display-4 fw-bold" id="titulo-cadastro">Cadastro de Produtos</h1>
+                <p class="lead">Gerencie seu inventário de forma eficiente</p>
+            </div>
+        </header>
+
+        <div id="mensagem-sucesso" class="mensagem-sucesso hidden"></div>
+
+        <div class="container-adicionar-sapato">
+            <div class="form-container">
+                <input type="hidden" id="sapato-id">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="modelo">Modelo:</label>
+                            <input type="text" id="modelo" class="form-control-lg" required>
+                            <span id="modelo-error" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="cor">Cor:</label>
+                            <input type="text" id="cor" class="form-control-lg" required>
+                            <span id="cor-error" class="error"></span>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="numeracao">Numeração:</label>
+                            <select id="numeracao" class="form-select-lg" required>
+                                <option value="">Selecione</option>
+                                <option value="33">33</option>
+                                <option value="34">34</option>
+                                <option value="35">35</option>
+                                <option value="36">36</option>
+                                <option value="37">37</option>
+                                <option value="38">38</option>
+                                <option value="39">39</option>
+                                <option value="40">40</option>
+                                <option value="41">41</option>
+                                <option value="42">42</option>
+                                <option value="43">43</option>
+                                <option value="44">44</option>
+                            </select>
+                            <span id="numeracao-error" class="error"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="valor">Valor (R$):</label>
+                            <input type="number" id="valor" step="0.01" class="form-control-lg" required>
+                            <span id="valor-error" class="error"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group">
+                        <label for="quantidade">Quantidade:</label>
+                        <input type="number" min="0" id="quantidade" class="form-control-lg" value="0">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="foto-upload">Foto:</label>
+                    <input type="file" id="foto-upload" accept="image/*" class="form-control" required>
+                    <span id="foto-error" class="error"></span>
+                    </div>
+            
+                    <div class="buttons">
+                    <button id="btn-cancelar" type="button" class="btn btn-danger" onclick="limparFormulario()">Cancelar Cadastro</button>
+                    <button id="btn-adicionar" type="button" class="btn btn-success" onclick="adicionarSapato()">Cadastrar Produto</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="backup">
+        <header class="header text-center">
+            <div class="container">
+                <h1 class="display-4 fw-bold">Backup do Estoque</h1>
+                </div>
+                </header>
+
+                <div class="backup-section" style="text-align: center;">
+                <p>Deseja importar ou expostar o estoque atual? </p>
+    	        <button class="btn btn-outline-warning" onclick="exportarEstoque()">Exportar Estoque</button>
+    	        <button class="btn btn-outline-warning" onclick="document.getElementById('import-input').click()">Importar Estoque</button>
+    	        <input type="file" id="import-input" accept=".json" class="hidden" onchange="importarEstoque(this)">
+    	        <p>O backup é essencial para não perder seus dados a longo prazo!</p>
+	            </div>
+                </section>
+
+                <footer style="text-align: center; margin-top: 80px; margin-bottom: 20px; background-color: antiquewhite;">
+                <p style="margin-bottom: 0px;">&copy; 2025 E&E. Todos os direitos reservados.</p>
+                <nav>
+                <i class="fa-solid fa-envelope fa-bounce" style="--fa-bounce-start-scale-x: 1;--fa-bounce-start-scale-y: 1;--fa-bounce-jump-scale-x: 1;--fa-bounce-jump-scale-y: 1;--fa-bounce-land-scale-x: 1;--fa-bounce-land-scale-y: 1;--fa-bounce-rebound: 0;"></i>
+                <a href="https://www.instagram.com/esterpazini__/">Ester Pazini</a>
+                <i class="fa-solid fa-envelope fa-bounce" style="--fa-bounce-start-scale-x: 1;--fa-bounce-start-scale-y: 1;--fa-bounce-jump-scale-x: 1;--fa-bounce-jump-scale-y: 1;--fa-bounce-land-scale-x: 1;--fa-bounce-land-scale-y: 1;--fa-bounce-rebound: 0;"></i>
+                <a href="https://www.instagram.com/_elianaborgess/">Eliana Borges</a>
+                </nav>
+                </footer>
+                <div id="confirm-modal" class="modal" style="
+                display: none;
+                position: fixed;
+                z-index: 9999;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.4);
+                ">
+                <div class="modal-content" style="
+                background-color: white;
+                margin: 15% auto;
+                padding: 20px;
+                border: 1px solid #888;
+                width: 80%;
+                max-width: 400px;
+                border-radius: 8px;
+                text-align: center;
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+                ">
+                <h3 id="modal-message">Certeza que deseja excluir esse item?</h3>
+                <div style="margin-top: 20px;">
+                <button class="btn btn-danger" onclick="confirmarAcao()">Confirmar</button>
+                <button class="btn btn-secondary" onclick="fecharModal()">Cancelar</button>
+                </div>
+                </div>
+            </div>
+
+
+        <script src="estoque.js"></script>
+    </body>
+</html>
