@@ -47,21 +47,23 @@
     <section id="produtos" class="py-5">
         <div class="container">
             <!-- Filtros  -->
-            <div class="total-filtros">
-                <h2 style="text-align: center; font-size: 25px;">FILTRAR SAPATOS</h2>
-                <div class="filtros">
-                    <div class="form-group">
-                        <label for="filtro-modelo">MODELO:</label>
-                        <input type="text" id="filtro-modelo" placeholder="Digite um modelo">
+            <div class="filtros-container">
+                <h1 class="filtros-titulo">FILTRAR SAPATOS</h1>
+                <div class="filtros-form">
+                    <div class="filtro-group">
+                        <label for="filtro-modelo">Modelo</label>
+                        <input type="text" id="filtro-modelo" placeholder="Ex: Papete" class="filtro-input">
                     </div>
-                    <div class="form-group">
-                        <label for="filtro-cor">COR:</label>
-                        <input type="text" id="filtro-cor" placeholder="Digite uma cor">
+                    
+                    <div class="filtro-group">
+                        <label for="filtro-cor">Cor</label>
+                        <input type="text" id="filtro-cor" placeholder="Ex: Preto" class="filtro-input">
                     </div>
-                    <div class="form-group">
-                        <label for="filtro-numeracao">NUMERAÇÃO:</label>
-                        <select id="filtro-numeracao">
-                            <option value="">Selecione</option>
+                    
+                    <div class="filtro-group">
+                        <label for="filtro-numeracao">Numeração</label>
+                        <select id="filtro-numeracao" class="filtro-select">
+                            <option value="">Todas</option>
                             <option value="33">33</option>
                             <option value="34">34</option>
                             <option value="35">35</option>
@@ -76,9 +78,14 @@
                             <option value="44">44</option>
                         </select>
                     </div>
-                    <div id="buttons-filtro">
-                        <button class="btn btn-outline-primary" onclick="filtrarEstoque()">Aplicar Filtros</button>
-                        <button class="btn btn-outline-danger" onclick="limparFiltros()">Limpar Filtros</button>
+                    
+                    <div class="filtro-botoes">
+                        <button class="filtro-btn aplicar" onclick="filtrarEstoque()">
+                            <i class="fas fa-filter"></i> Filtrar
+                        </button>
+                        <button class="filtro-btn limpar" onclick="limparFiltros()">
+                            <i class="fas fa-eraser"></i> Limpar
+                        </button>
                     </div>
                 </div>
             </div>
@@ -129,27 +136,64 @@
 
     <!-- Footer -->
     <section id="contatos">
-        <footer class="footer">
+        <footer class="footer bg-dark text-black pt-5 pb-4">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <h5>Sobre Nós</h5>
-                        <p>Loja online em Três Lagoas - Ms</p>
+                    <!-- Sobre Nós -->
+                    <div class="col-lg-4 col-md-6 mb-4 mb-md-0 text-center">
+                        <h5 class="text-uppercase mb-4" style="text-align: center;">M&R Shoes</h5>
+                        <p>
+                            <i class="fas fa-map-marker-alt me-2"></i> Três Lagoas - MS, Brasil
+                        </p>
+                        <p class="mb-0">
+                            Conforto e elegância para todos os momentos.
+                        </p>
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <h5>Contato</h5>
-                        <a href="https://wa.me/5567992570519?text=ol%C3%A1%2C%20visitei%20seu%20site%20e%20tenho%20interesse%20em%20comprar%20seus%20sapatos!"><i class="fas fa-phone me-2"></i> (67) 99257-0519</a>
+
+                    <!-- Contato -->
+                    <div class="col-lg-4 col-md-6 mb-4 mb-md-0 text-center">
+                        <h5 class="text-uppercase mb-4" style="text-align: center;">Contato</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <a href="https://wa.me/5567992570519?text=Olá, visitei seu site e tenho interesse em seus sapatos!" 
+                                class="text-black text-decoration-none">
+                                    <i class="fab fa-whatsapp me-2"></i> (67) 99257-0519
+                                </a>
+                            </li>
+                        </ul>
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <h5>Redes Sociais</h5>
+
+                    <!-- Redes Sociais -->
+                    <div class="col-lg-4 col-md-12 text-center">
+                        <h5 class="text-uppercase mb-4" style="text-align: center;">Redes Sociais</h5>
                         <div class="social-links">
-                            <a href="https://www.instagram.com/mr.shoes.br/" class="text-black me-2"><i class="fab fa-instagram"></i></a>
-                            <a href="https://wa.me/5567992570519?text=ol%C3%A1%2C%20visitei%20seu%20site%20e%20tenho%20interesse%20em%20comprar%20seus%20sapatos!" class="text-black me-2"><i class="fab fa-whatsapp"></i></a>
+                            <a href="https://www.instagram.com/mr.shoes.br/" 
+                            class="text-black me-3 fs-5" 
+                            target="_blank" 
+                            aria-label="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="https://wa.me/5567992570519?text=Olá, visitei seu site e tenho interesse em seus sapatos!" 
+                            class="text-black me-3 fs-5" 
+                            target="_blank" 
+                            aria-label="WhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
-                <div class="text-center">
-                    <p class="mb-0">&copy; Site Desenvolvido por Ester Pacheco - (67) 99280-5121. Todos os direitos reservados.</p>
+
+                <!-- Direitos Autorais -->
+                <div class="row mt-4">
+                    <div class="col-12 text-center">
+                        <hr class="mb-4 bg-light">
+                        <p class="mb-0 small">
+                            &copy; 2025 M&R Shoes. Todos os direitos reservados. 
+                            <span class="d-block d-sm-inline mt-2 mt-sm-0">
+                                Desenvolvido por <a href="https://www.instagram.com/esterpazini__/" class="text-black">Ester Pacheco</a> - (67) 99280-5121
+                            </span>
+                        </p>
+                    </div>
                 </div>
             </div>
         </footer>
@@ -383,7 +427,7 @@
             const total = carrinho.reduce((sum, item) => sum + (item.valor * item.quantidade), 0);
             
             // Monta a mensagem para o WhatsApp
-            let mensagem = 'Olá, gostaria de comprar os seguintes itens na M&R Shoes:\n\n';
+            let mensagem = '';
             
             carrinho.forEach(item => {
                 mensagem += `- ${item.modelo} (Cor: ${item.cor}, Nº: ${item.numeracao}) - ${item.quantidade}x R$ ${item.valor.toFixed(2)}\n`;
@@ -396,7 +440,7 @@
             const mensagemCodificada = encodeURIComponent(mensagem);
             
             // Redireciona para o WhatsApp
-            window.open(`https://wa.me/5567992570519?text=ol%C3%A1%2C%20visitei%20seu%20site%20e%20tenho%20interesse%20em%20comprar%20seus%20sapatos!=${mensagemCodificada}`, '_blank');
+            window.open(`https://wa.me/5567992570519?text=ol%C3%A1%2C%20visitei%20seu%20site%20e%20tenho%20interesse%20em%20comprar%20seus%20sapatos!${mensagemCodificada}`, '_blank');
             
             // Limpa o carrinho após a compra
             carrinho = [];
@@ -418,6 +462,29 @@
                 fecharCarrinho();
             }
         });
+
+        function filtrarEstoque() {
+            const modelo = document.getElementById('filtro-modelo').value.toLowerCase();
+            const cor = document.getElementById('filtro-cor').value.toLowerCase();
+            const numeracao = document.getElementById('filtro-numeracao').value;
+
+            const estoqueFiltrado = estoque.filter(sapato => {
+                const matchModelo = modelo ? sapato.modelo.toLowerCase().includes(modelo) : true;
+                const matchCor = cor ? sapato.cor.toLowerCase().includes(cor) : true;
+                const matchNumeracao = numeracao ? sapato.numeracao === numeracao : true;
+
+                return matchModelo && matchCor && matchNumeracao;
+            });
+
+            atualizarListaProdutos(estoqueFiltrado); // Atualiza a lista com os itens filtrados
+        }
+
+        function limparFiltros() {
+            document.getElementById('filtro-modelo').value = '';
+            document.getElementById('filtro-cor').value = '';
+            document.getElementById('filtro-numeracao').value = '';
+            atualizarListaProdutos(); // Mostra todo o estoque novamente
+        }
         
         // Inicializa o carregamento dos produtos quando a página carrega
         document.addEventListener('DOMContentLoaded', carregarProdutos);
