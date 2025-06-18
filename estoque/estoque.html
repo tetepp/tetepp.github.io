@@ -207,8 +207,9 @@
                 </div>
             </div>
         <script src="estoque.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
         <script>
-            // Mesma configuração do Firebase
             const firebaseConfig = {
                 apiKey: "AIzaSyCj0wBmWPcZqhR4aHnhJj1euYbVRiZTW_I",
                 authDomain: "mr-shoes-ester.firebaseapp.com",
@@ -219,18 +220,12 @@
                 measurementId: "G-D338V7HSG4"
             };
 
-
-            // Inicialização única do Firebase
             if (!firebase.apps.length) {
                 firebase.initializeApp(firebaseConfig);
             }
 
-            // Verificação de autenticação
             firebase.auth().onAuthStateChanged((user) => {
-                // Só redireciona se não estiver logado E não estiver na página de login
-                const currentPage = window.location.pathname.split('/').pop();
-                if (!user && currentPage !== 'login.html') {
-                    console.log("[DEBUG] Usuário não autenticado, redirecionando para login");
+                if (!user) {
                     window.location.href = 'login.html';
                 }
             });

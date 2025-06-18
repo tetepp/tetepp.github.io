@@ -184,7 +184,6 @@
         </div>
     </div>
     <script>
-        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyCj0wBmWPcZqhR4aHnhJj1euYbVRiZTW_I",
             authDomain: "mr-shoes-ester.firebaseapp.com",
@@ -195,71 +194,48 @@
             measurementId: "G-D338V7HSG4"
         };
 
-        // Inicialização única do Firebase
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
 
-        // Verificação de autenticação
+        // Verificação única ao carregar a página
         firebase.auth().onAuthStateChanged((user) => {
-            const currentPage = window.location.pathname.split('/').pop();
-
-            if (user && currentPage === 'login.html') {
-                console.log("[DEBUG] Usuário autenticado, redirecionando para estoque");
-                window.location.href = 'estoque.html';
-            }
-
-            if (!user && currentPage === 'login.html') {
-                console.log("[DEBUG] Usuário não autenticado, permanece na página de login");
+            if (user) {
+                // Se já está autenticado e na página de login, redireciona
+                if (window.location.pathname.endsWith('login.html')) {
+                    console.log('Redirecionando para estoque.html');
+                    window.location.href = 'estoque.html';
+                }
             }
         });
 
-        // Função de login
-        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+        // Função de login modificada
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-
+            
             const email = document.getElementById('email').value;
             const senha = document.getElementById('senha').value;
-
+            const btn = document.querySelector('.btn-login');
+            
+            btn.disabled = true;
+            btn.textContent = 'Autenticando...';
+            
             try {
-                // Tentativa de login
                 await firebase.auth().signInWithEmailAndPassword(email, senha);
-                // O redirecionamento acontecerá no onAuthStateChanged
+                // Redirecionamento direto após login bem-sucedido
+                window.location.href = 'estoque.html';
             } catch (error) {
-                let errorMessage = "Credenciais inválidas! Tente novamente.";
-
-                if (error.code === 'auth/wrong-password') {
-                    errorMessage = "Senha incorreta!";
-                } else if (error.code === 'auth/user-not-found') {
-                    errorMessage = "Usuário não encontrado!";
-                } else if (error.code === 'auth/invalid-email') {
-                    errorMessage = "Formato de email inválido!";
-                }
-
-                document.getElementById('errorMessage').textContent = errorMessage;
+                document.getElementById('errorMessage').textContent = 
+                    error.code === 'auth/wrong-password' ? 'Senha incorreta!' :
+                    error.code === 'auth/user-not-found' ? 'Usuário não encontrado!' :
+                    'Erro ao fazer login';
                 document.getElementById('errorMessage').style.display = 'block';
                 document.getElementById('senha').value = '';
-
-                document.getElementById('senha').style.animation = 'shake 0.5s';
-                setTimeout(() => {
-                    document.getElementById('senha').style.animation = '';
-                }, 500);
-
-                console.error("Erro no login:", error);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Entrar';
             }
         });
-
-        // Animação
-        const style = document.createElement('style');
-        style.innerHTML = `
-            @keyframes shake {
-                0%, 100% { transform: translateX(0); }
-                25% { transform: translateX(-5px); }
-                75% { transform: translateX(5px); }
-            }
-        `;
-        document.head.appendChild(style);
     </script>
-
 </body>
 </html>
