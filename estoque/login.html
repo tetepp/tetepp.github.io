@@ -148,6 +148,9 @@
             }
         }
     </style>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
 </head>
 <body>
     <div class="login-container">
@@ -183,8 +186,35 @@
             &copy; 2025 M&R Shoes. Todos os direitos reservados.
         </div>
     </div>
-
     <script>
+         // Configuração do Firebase 
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY",
+            authDomain: "SEU_PROJETO.firebaseapp.com",
+            databaseURL: "https://SEU_PROJETO.firebaseio.com",
+            projectId: "SEU_PROJETO",
+            storageBucket: "SEU_PROJETO.appspot.com",
+            messagingSenderId: "SEU_SENDER_ID",
+            appId: "SEU_APP_ID"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = "admin@mrshoes.com"; // Email fixo ou crie um campo
+            const senha = document.getElementById('senha').value;
+            
+            try {
+            await firebase.auth().signInWithEmailAndPassword(email, senha);
+            window.location.href = 'estoque.html';
+            } catch (error) {
+            document.getElementById('errorMessage').style.display = 'block';
+            document.getElementById('senha').value = '';
+            console.error("Erro no login:", error);
+            }
+        });
+
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             

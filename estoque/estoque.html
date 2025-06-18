@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="estilo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>M&R Shoes - Estoque</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
 </head>
 <body>
     <section id="produtos">
@@ -203,8 +206,29 @@
                 </div>
                 </div>
             </div>
-
-
         <script src="estoque.js"></script>
+        <script type="module">
+            // Import the functions you need from the SDKs you need
+            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
+            import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
+            // TODO: Add SDKs for Firebase products that you want to use
+            // https://firebase.google.com/docs/web/setup#available-libraries
+
+            // Your web app's Firebase configuration
+            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+            const firebaseConfig = {
+                apiKey: "AIzaSyCj0wBmWPcZqhR4aHnhJj1euYbVRiZTW_I",
+                authDomain: "mr-shoes-ester.firebaseapp.com",
+                projectId: "mr-shoes-ester",
+                storageBucket: "mr-shoes-ester.firebasestorage.app",
+                messagingSenderId: "1095547696867",
+                appId: "1:1095547696867:web:e035b012e1d7d6d64437d6",
+                measurementId: "G-D338V7HSG4"
+            };
+
+            // Initialize Firebase
+            const app = initializeApp(firebaseConfig);
+            const analytics = getAnalytics(app);
+        </script>
     </body>
 </html>
