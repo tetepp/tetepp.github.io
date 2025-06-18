@@ -207,15 +207,8 @@
                 </div>
             </div>
         <script src="estoque.js"></script>
-        <script type="module">
-            // Import the functions you need from the SDKs you need
-            import { initializeApp } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-app.js";
-            import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.9.1/firebase-analytics.js";
-            // TODO: Add SDKs for Firebase products that you want to use
-            // https://firebase.google.com/docs/web/setup#available-libraries
-
-            // Your web app's Firebase configuration
-            // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        <script>
+            // Mesma configuração do Firebase
             const firebaseConfig = {
                 apiKey: "AIzaSyCj0wBmWPcZqhR4aHnhJj1euYbVRiZTW_I",
                 authDomain: "mr-shoes-ester.firebaseapp.com",
@@ -226,9 +219,21 @@
                 measurementId: "G-D338V7HSG4"
             };
 
-            // Initialize Firebase
-            const app = initializeApp(firebaseConfig);
-            const analytics = getAnalytics(app);
+
+            // Inicialização única do Firebase
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+
+            // Verificação de autenticação
+            firebase.auth().onAuthStateChanged((user) => {
+                // Só redireciona se não estiver logado E não estiver na página de login
+                const currentPage = window.location.pathname.split('/').pop();
+                if (!user && currentPage !== 'login.html') {
+                    console.log("[DEBUG] Usuário não autenticado, redirecionando para login");
+                    window.location.href = 'login.html';
+                }
+            });
         </script>
     </body>
 </html>
