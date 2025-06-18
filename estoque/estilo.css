@@ -318,6 +318,30 @@ section {
     }
 }
 
+/*responsividade dos cards*/
+/* Garante que os cards tenham largura flexível */
+.card {
+    width: 100%; /* Ocupa toda a largura do container pai */
+    max-width: 300px; /* Largura máxima (opcional) */
+    margin: 0 auto; /* Centraliza o card */
+}
+
+/* Ajusta o layout em telas pequenas */
+@media (max-width: 768px) {
+    .card {
+        max-width: 100%; /* Ocupa toda a largura em telas pequenas */
+    }
+}
+
+@media (max-width: 576px) {
+    .card-footer div {
+        flex-direction: column;
+    }
+    .card-footer button {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+}
 
            
 

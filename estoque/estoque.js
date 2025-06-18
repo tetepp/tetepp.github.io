@@ -1,61 +1,117 @@
-let estoque = [];
+let db;
+window.estoque = []; 
 let editandoId = null;
 let modalAction = null;
 let modalParams = null;
 
-// Inicialização  
-document.addEventListener('DOMContentLoaded', () => {
-    carregarEstoque();
+// inicialização  
+document.addEventListener('DOMContentLoaded', async () => {
+    await initDB();
+    await carregarEstoque();
     atualizarListaEstoque();
 });
 
-// Função para gerar ID único
 function gerarIdUnico() {
-	return Date.now().toString(36) + Math.random().toString(36).substr(2);
+    return Date.now().toString(36) + Math.random().toString(36).substr(2);
 }
 
-// Carregar estoque do localStorage
-function carregarEstoque() {
-    const dados = localStorage.getItem("estoqueSapatos");
-    estoque = dados ? JSON.parse(dados) : [];
-    console.log("Dados carregados:", estoque); 
+// configuração do IndexedDB - banco de dados 
+function initDB() {
+    return new Promise((resolve, reject) => {
+        const request = indexedDB.open('EstoqueSapatosDB', 1);
+
+        request.onerror = (event) => {
+            console.error("Erro ao abrir o banco de dados:", event.target.error);
+            reject(event.target.error);
+        };
+
+        request.onupgradeneeded = (event) => {
+            db = event.target.result;
+            if (!db.objectStoreNames.contains('sapatos')) {
+                const store = db.createObjectStore('sapatos', { keyPath: 'id' });
+                store.createIndex('modelo', 'modelo', { unique: false });
+                store.createIndex('cor', 'cor', { unique: false });
+                store.createIndex('numeracao', 'numeracao', { unique: false });
+            }
+        };
+
+        request.onsuccess = (event) => {
+            db = event.target.result;
+            resolve();
+        };
+    });
 }
 
-// Salvar estoque no localStorage
-function salvarEstoque() {
-    localStorage.setItem('estoqueSapatos', JSON.stringify(estoque));
+async function carregarEstoque() {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction('sapatos', 'readonly');
+        const store = transaction.objectStore('sapatos');
+        const request = store.getAll();
+
+        request.onsuccess = () => {
+            estoque = request.result;
+            console.log("Dados carregados:", estoque);
+            resolve();
+        };
+
+        request.onerror = (event) => {
+            console.error("Erro ao carregar estoque:", event.target.error);
+            reject(event.target.error);
+        };
+    });
 }
 
-// Validar formulário
+async function salvarSapato(sapato) {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction('sapatos', 'readwrite');
+        const store = transaction.objectStore('sapatos');
+        const request = store.put(sapato);
+
+        request.onsuccess = () => resolve();
+        request.onerror = (event) => reject(event.target.error);
+    });
+}
+
+async function removerSapatoDB(id) {
+    return new Promise((resolve, reject) => {
+        const transaction = db.transaction('sapatos', 'readwrite');
+        const store = transaction.objectStore('sapatos');
+        const request = store.delete(id);
+
+        request.onsuccess = () => resolve();
+        request.onerror = (event) => reject(event.target.error);
+    });
+}
+
 function validarFormulario() {
-	let valido = true;
-	const modelo = document.getElementById('modelo').value;
-	const cor = document.getElementById('cor').value;
-	const numeracao = document.getElementById('numeracao').value;
-	const valor = document.getElementById('valor').value;
+    let valido = true;
+    const modelo = document.getElementById('modelo').value;
+    const cor = document.getElementById('cor').value;
+    const numeracao = document.getElementById('numeracao').value;
+    const valor = document.getElementById('valor').value;
     
-	// Limpar erros anteriores
-	document.querySelectorAll('.error').forEach(el => el.textContent = '');
+    // Limpar erros anteriores
+    document.querySelectorAll('.error').forEach(el => el.textContent = '');
     
-	if (!modelo) {
-    	document.getElementById('modelo-error').textContent = 'Modelo é obrigatório';
-    	valido = false;
-	}
+    if (!modelo) {
+        document.getElementById('modelo-error').textContent = 'Modelo é obrigatório';
+        valido = false;
+    }
     
-	if (!cor) {
-    	document.getElementById('cor-error').textContent = 'Cor é obrigatória';
-    	valido = false;
-	}
+    if (!cor) {
+        document.getElementById('cor-error').textContent = 'Cor é obrigatória';
+        valido = false;
+    }
     
-	if (!numeracao) {
-    	document.getElementById('numeracao-error').textContent = 'Numeração é obrigatória';
-    	valido = false;
-	}
+    if (!numeracao) {
+        document.getElementById('numeracao-error').textContent = 'Numeração é obrigatória';
+        valido = false;
+    }
     
-	if (!valor || isNaN(valor) || parseFloat(valor) <= 0) {
-    	document.getElementById('valor-error').textContent = 'Valor inválido';
-    	valido = false;
-	}
+    if (!valor || isNaN(valor) || parseFloat(valor) <= 0) {
+        document.getElementById('valor-error').textContent = 'Valor inválido';
+        valido = false;
+    }
     
     const fileInput = document.getElementById('foto-upload');
     const sapatoExistente = estoque.find(s => s.id === editandoId);
@@ -66,115 +122,90 @@ function validarFormulario() {
         }
     }
 
-	return valido;
+    return valido;
 }
 
-// Processar foto (Upload)
 async function processarFoto() {
     const fileInput = document.getElementById('foto-upload');
     if (fileInput.files && fileInput.files[0]) {
         return await lerArquivoComoBase64(fileInput.files[0]);
     }
     
-    // Em modo edição, retorna null se não for selecionada nova foto
     return editandoId ? null : 'https://via.placeholder.com/200?text=Sapato+sem+imagem';
 }
 
-// Converter arquivo para Base64
+
 function lerArquivoComoBase64(file) {
-	return new Promise((resolve, reject) => {
-    	const reader = new FileReader();
-    	reader.onload = () => resolve(reader.result);
-    	reader.onerror = error => reject(error);
-    	reader.readAsDataURL(file);
-	});
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+    });
 }
 
-// Adicionar/Editar sapato
+
 async function adicionarSapato(){
     if (!validarFormulario()) return;
 
-    let modelo = document.getElementById('modelo').value;
-    let cor = document.getElementById('cor').value;
-    let numeracao = document.getElementById('numeracao').value;
-    let valor = parseFloat(document.getElementById('valor').value);
-	let quantidade = document.getElementById('quantidade').value
-    let foto = await processarFoto();
+    const modelo = document.getElementById('modelo').value;
+    const cor = document.getElementById('cor').value;
+    const numeracao = document.getElementById('numeracao').value;
+    const valor = parseFloat(document.getElementById('valor').value);
+    const quantidade = document.getElementById('quantidade').value;
+    const foto = await processarFoto();
 
-	// Modo edição
-    if (editandoId) {
-        const index = estoque.findIndex(s => s.id === editandoId);
-        if (index !== -1) {
-            estoque[index] = {
-                ...estoque[index],
-                modelo,
-                cor,
-                numeracao,
-                valor,
-                quantidade,
-                foto: foto || estoque[index].foto // Mantém foto existente se não for alterada
-            };
-            
-            salvarEstoque();
-            limparFormulario();
-            editandoId = null;
-            atualizarListaEstoque();
-            window.location.href = '#produtos';
-            return;
-        }
-    }
-
-    // Novo cadastro
     const novoSapato = {
-        id: gerarIdUnico(),
+        id: editandoId || gerarIdUnico(),
         modelo,
         cor,
         numeracao,
         valor,
-		quantidade,
-        foto,
-        dataCadastro: new Date().toLocaleString()
+        quantidade,
+        foto: foto || (editandoId ? estoque.find(s => s.id === editandoId)?.foto : foto),
+        dataCadastro: editandoId ? estoque.find(s => s.id === editandoId)?.dataCadastro : new Date().toLocaleString()
     };
 
-    estoque.push(novoSapato);
-    salvarEstoque();
-    limparFormulario();
-        
-    // REDIRECIONAMENTO IMEDIATO
-    window.location.href = '#produtos';
-	atualizarListaEstoque();
-    
+    try {
+        await salvarSapato(novoSapato);
+        await carregarEstoque();
+        limparFormulario();
+        editandoId = null;
+        atualizarListaEstoque();
+        window.location.href = '#produtos';
+    } catch (error) {
+        console.error("Erro ao salvar sapato:", error);
+        alert('Erro ao salvar sapato. Veja o console para mais detalhes.');
+    }
 }
 
-// Editar sapato
+
 function editarSapato(id) {
     const sapato = estoque.find(s => s.id === id);
     if (!sapato) return;
     
     editandoId = id;
     
-    // Preencher formulário com dados existentes
     document.getElementById('modelo').value = sapato.modelo;
     document.getElementById('cor').value = sapato.cor;
     document.getElementById('numeracao').value = sapato.numeracao;
     document.getElementById('valor').value = sapato.valor;
     document.getElementById('quantidade').value = sapato.quantidade;
     
-    // Atualizar botão para modo edição
+ 
     document.getElementById('btn-adicionar').textContent = 'Salvar Alterações';
-	document.getElementById('btn-cancelar').textContent = 'Cancelar Alterações';
+    document.getElementById('btn-cancelar').textContent = 'Cancelar Alterações';
     
-    // Rolar até o formulário
     document.querySelector('#cadastro-produtos').scrollIntoView({ behavior: 'smooth' });
 }
 
-// Limpar formulário
+
 function limparFormulario() {
-	document.getElementById('modelo').value = '';
+    document.getElementById('modelo').value = '';
     document.getElementById('cor').value = '';
     document.getElementById('numeracao').value = '';
     document.getElementById('valor').value = '';
-	document.getElementById('quantidade').value = '';
+    document.getElementById('quantidade').value = '';
     document.getElementById('foto-upload').value = '';
     
     document.getElementById('modelo-error').textContent = '';
@@ -183,7 +214,6 @@ function limparFormulario() {
     document.getElementById('valor-error').textContent = '';
     document.getElementById('foto-error').textContent = '';
     
-	// Resetar estado de edição
     if (editandoId) {
         document.getElementById('btn-adicionar').textContent = 'Cadastrar Produto';
         editandoId = null;
@@ -192,31 +222,31 @@ function limparFormulario() {
 
 // Abrir modal de confirmação
 function abrirModal(mensagem, action, params = null) {
-	modalAction = action;
-	modalParams = params;
-	document.getElementById('modal-message').textContent = mensagem;
-	document.getElementById('confirm-modal').style.display = 'block';
+    modalAction = action;
+    modalParams = params;
+    document.getElementById('modal-message').textContent = mensagem;
+    document.getElementById('confirm-modal').style.display = 'block';
 }
 
-// Fechar modal
 function fecharModal() {
-	document.getElementById('confirm-modal').style.display = 'none';
-	modalAction = null;
-	modalParams = null;
+    document.getElementById('confirm-modal').style.display = 'none';
+    modalAction = null;
+    modalParams = null;
 }
 
-// Confirmar ação no modal
+
 function confirmarAcao() {
-	if (modalAction) {
-    	modalAction(modalParams);
-	}
-	fecharModal();
+    if (modalAction) {
+        modalAction(modalParams);
+    }
+    fecharModal();
 }
 
-// Remover sapato
+
 function removerSapato(id) {
-	abrirModal('Tem certeza que deseja remover este sapato do estoque?', confirmarRemocao, id);
+    abrirModal('Tem certeza que deseja remover este sapato do estoque?', confirmarRemocao, id);
 }
+
 function venderProduto(id) {
     const index = estoque.findIndex(sapato => sapato.id === id);
     if (index !== -1) {
@@ -225,8 +255,10 @@ function venderProduto(id) {
 
         if (quantidadeAtual > 0) {
             sapato.quantidade = quantidadeAtual - 1;
-            salvarEstoque();
-            atualizarListaEstoque();
+            salvarSapato(sapato)
+                .then(() => carregarEstoque())
+                .then(() => atualizarListaEstoque())
+                .catch(error => console.error("Erro ao vender produto:", error));
         }
 
         if (sapato.quantidade == 0) {
@@ -235,31 +267,27 @@ function venderProduto(id) {
     }
 }
 
-// Confirmação de remoção
 function confirmarRemocao(id) {
-	estoque = estoque.filter(sapato => sapato.id !== id);
-	salvarEstoque();
-	atualizarListaEstoque();
+    removerSapatoDB(id)
+        .then(() => carregarEstoque())
+        .then(() => atualizarListaEstoque())
+        .catch(error => console.error("Erro ao remover sapato:", error));
 }
 
-// Limpar filtros
+
 function limparFiltros() {
-	document.getElementById('filtro-modelo').value = '';
-	document.getElementById('filtro-cor').value = '';
-	document.getElementById('filtro-numeracao').value = '';
-	atualizarListaEstoque();
+    document.getElementById('filtro-modelo').value = '';
+    document.getElementById('filtro-cor').value = '';
+    document.getElementById('filtro-numeracao').value = '';
+    atualizarListaEstoque();
 }
 
-// Filtrar estoque 
 function filtrarEstoque() {
     const filtroModelo = document.getElementById('filtro-modelo').value.toLowerCase();
     const filtroCor = document.getElementById('filtro-cor').value.toLowerCase();
     const filtroNumeracao = document.getElementById('filtro-numeracao').value;
     
-    // Carrega o estoque uma vez
-    carregarEstoque();
-    
-    // Filtra os itens
+    // Filtra os itens do array estoque (já carregado)
     const estoqueFiltrado = estoque.filter(sapato => {
         const modeloMatch = sapato.modelo?.toLowerCase().includes(filtroModelo) ?? false;
         const corMatch = sapato.cor?.toLowerCase().includes(filtroCor) ?? false;
@@ -271,7 +299,6 @@ function filtrarEstoque() {
     atualizarListaEstoque(estoqueFiltrado);
 }
 
-// Renderizar lista de estoque
 function atualizarListaEstoque(estoqueFiltrado = null) {
     const listaSapatos = document.getElementById('listaSapatos');
     const totalItens = document.getElementById('total-itens');
@@ -283,7 +310,6 @@ function atualizarListaEstoque(estoqueFiltrado = null) {
     
     listaSapatos.innerHTML = '';
     
-    // Usa estoqueFiltrado se existir, senão usa o estoque completo
     const itensParaExibir = estoqueFiltrado !== null ? estoqueFiltrado : estoque;
     totalItens.textContent = itensParaExibir.length.toString();
     
@@ -292,9 +318,8 @@ function atualizarListaEstoque(estoqueFiltrado = null) {
         return;
     }
     
-    // Gera os cards
     itensParaExibir.forEach(sapato => {
-        const foto = sapato.foto || "placeholder.jpg";
+        const foto = sapato.foto || "https://via.placeholder.com/200?text=Sapato+sem+imagem";
         const modelo = sapato.modelo || "Modelo desconhecido";
         const valor = sapato.valor ? sapato.valor.toFixed(2) : "0.00";
         const quantidade = sapato.quantidade || "0";
@@ -314,90 +339,75 @@ function atualizarListaEstoque(estoqueFiltrado = null) {
                         ${quantidade == 0 
                             ? '<span style="color:red;">Produto ESGOTADO</span>' 
                             : quantidade}
-</p>
+                    </p>
                     <p class="card-text"><small class="text-muted">Cadastrado em: ${data}</small></p>
                 </div>
                 <div class="card-footer bg-white" style="padding: 0.75rem; margin-top: auto;">
-        			<div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
-            			<button class="btn btn-outline-primary" 
-                    	style="padding: 0.375rem 0.75rem; font-size: 15px; flex: 1; min-width: 60px;"
-                    	data-id="${sapato.id}" id="btn-editar" onclick="editarSapato('${sapato.id}')">Editar</button>
-            			<button class="btn btn-outline-danger"
+                    <div style="display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap;">
+                        <button class="btn btn-outline-primary" 
+                            style="padding: 0.375rem 0.75rem; font-size: 15px; flex: 1; min-width: 60px;"
+                            data-id="${sapato.id}" id="btn-editar" onclick="editarSapato('${sapato.id}')">Editar</button>
+                        <button class="btn btn-outline-danger"
                             style="padding: 0.375rem 0.75rem; font-size: 15px; flex: 1; min-width: 60px;"
                             onclick="removerSapato('${sapato.id}')">Excluir</button>
-
                         <button class="btn btn-outline-success"
                             style="padding: 0.375rem 0.75rem; font-size: 15px; flex: 1; min-width: 60px;"
                             onclick="venderProduto('${sapato.id}')">Venda</button>
-        			</div>
-    			</div>
+                    </div>
+                </div>
             </div>
         `;
         listaSapatos.appendChild(sapatoCard);
     });
 }
 
-// Exportar estoque para JSON
-function exportarEstoque() {
-	const dataStr = JSON.stringify(estoque, null, 2);
-	const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+
+async function exportarEstoque() {
+    await carregarEstoque(); 
+    const dataStr = JSON.stringify(estoque, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
     
-	const exportFileDefaultName = `estoque-sapatos-${new Date().toISOString().slice(0,10)}.json`;
+    const exportFileDefaultName = `estoque-sapatos-${new Date().toISOString().slice(0,10)}.json`;
     
-	const linkElement = document.createElement('a');
-	linkElement.setAttribute('href', dataUri);
-	linkElement.setAttribute('download', exportFileDefaultName);
-	linkElement.click();
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
 }
 
 function importarEstoque(input) {
-	const file = input.files[0];
-	if (!file) return;
+    const file = input.files[0];
+    if (!file) return;
     
-	abrirModal('Importar estoque substituirá todos os dados atuais. Continuar?', confirmarImportacao, file);
+    abrirModal('Importar estoque substituirá todos os dados atuais. Continuar?', confirmarImportacao, file);
     
-	// Limpar o input para permitir nova seleção do mesmo arquivo
-	input.value = '';
+    input.value = '';
 }
 
-
-// Confirmar importação
-function confirmarImportacao(file) {
-	const reader = new FileReader();
-	reader.onload = function(e) {
-    	try {
-        	const novoEstoque = JSON.parse(e.target.result);
-        	if (Array.isArray(novoEstoque)) {
-            	estoque = novoEstoque;
-            	salvarEstoque();
-            	atualizarListaEstoque();
-            	alert('Estoque importado com sucesso!');
-        	} else {
-            	throw new Error('Formato inválido');
-        	}
-    	} catch (error) {
-        	alert('Erro ao importar estoque: arquivo inválido');
-        	console.error(error);
-    	}
-	};
-	reader.readAsText(file);
-}
-function venderProduto(id) {
-    const index = estoque.findIndex(sapato => sapato.id === id);
-    if (index !== -1) {
-        let sapato = estoque[index];
-        let quantidadeAtual = parseInt(sapato.quantidade || 0);
-
-        if (quantidadeAtual > 0) {
-            sapato.quantidade = quantidadeAtual - 1;
-            salvarEstoque();
+async function confirmarImportacao(file) {
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+        try {
+            const novoEstoque = JSON.parse(e.target.result);
+            if (!Array.isArray(novoEstoque)) {
+                throw new Error('Formato inválido: não é um array');
+            }
+            
+            const transaction = db.transaction('sapatos', 'readwrite');
+            const store = transaction.objectStore('sapatos');
+            store.clear();
+            
+            for (const sapato of novoEstoque) {
+                await salvarSapato(sapato);
+            }
+            
+            await carregarEstoque();
             atualizarListaEstoque();
+            alert('Estoque importado com sucesso!');
+        } catch (error) {
+            alert('Erro ao importar estoque: ' + error.message);
+            console.error(error);
         }
-
-        if (sapato.quantidade == 0) {
-            alert(`Produto "${sapato.modelo}" está ESGOTADO!`);
-        }
-    }
+    };
+    reader.readAsText(file);
 }
-
-
