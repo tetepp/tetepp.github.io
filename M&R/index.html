@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M&R Shoes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="index_estilo.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <img src="estoque/logo M&R Shoes.jpg" alt="" id="logo">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="navbar-nav w-100">
+                    <a class="nav-link active" href="#produtos">Produtos</a>
+                    <a class="nav-link" href="#contatos">Contato</a>
+                </div>
+                <!-- Ícone de Login para Gerente -->
+                <div class="d-flex">
+                    <a href="estoque/login.html" class="btn btn-outline-primary me-2" title="Área do Gerente">
+                        <i class="fas fa-user-shield"></i>
+                    </a>
+                    <a href="#" class="btn btn-outline-dark position-relative" id="btnAbrirCarrinho">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="contadorCarrinho">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="header">
+        <div class="container text-center">
+            <h1 class="display-4 fw-bold">M&R Shoes</h1>
+            <p class="lead">Conforto e elegância para todos os momentos</p>
+        </div>
+    </header>
+
+    <!-- Seção de Produtos -->
+    <section id="produtos" class="py-5">
+        <div class="container">
+            <!-- Filtros  -->
+            <div class="filtros-container">
+                <h1 class="filtros-titulo">FILTRAR SAPATOS</h1>
+                <div class="filtros-form">
+                    <div class="filtro-group">
+                        <label for="filtro-modelo">Modelo</label>
+                        <input type="text" id="filtro-modelo" placeholder="Ex: Papete" class="filtro-input">
+                    </div>
+                    
+                    <div class="filtro-group">
+                        <label for="filtro-cor">Cor</label>
+                        <input type="text" id="filtro-cor" placeholder="Ex: Preto" class="filtro-input">
+                    </div>
+                    
+                    <div class="filtro-group">
+                        <label for="filtro-numeracao">Numeração</label>
+                        <select id="filtro-numeracao" class="filtro-select">
+                            <option value="">Todas</option>
+                            <option value="33">33</option>
+                            <option value="34">34</option>
+                            <option value="35">35</option>
+                            <option value="36">36</option>
+                            <option value="37">37</option>
+                            <option value="38">38</option>
+                            <option value="39">39</option>
+                            <option value="40">40</option>
+                            <option value="41">41</option>
+                            <option value="42">42</option>
+                            <option value="43">43</option>
+                            <option value="44">44</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filtro-botoes">
+                        <button class="filtro-btn aplicar" onclick="filtrarEstoque()">
+                            <i class="fas fa-filter"></i> Filtrar
+                        </button>
+                        <button class="filtro-btn limpar" onclick="limparFiltros()">
+                            <i class="fas fa-eraser"></i> Limpar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de Produtos -->
+            <div class="row" id="listaSapatos">
+                <!-- Os produtos serão carregados dinamicamente pelo JavaScript -->
+                <div class="col-12 text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal do Carrinho -->
+    <div class="modal-carrinho" id="modalCarrinho">
+        <div class="modal-content-carrinho">
+            <div class="modal-header">
+                <h3 class="modal-title">🛍️ Carrinho de Compras</h3>
+                <button type="button" class="btn-close" onclick="fecharCarrinho()"></button>
+            </div>
+            <div class="modal-body">
+                <div id="carrinho-vazio" class="text-center py-4">
+                    <i class="fas fa-shopping-cart fa-3x mb-3 text-muted"></i>
+                    <p>Seu carrinho está vazio</p>
+                </div>
+                <div id="carrinho-itens"></div>
+                <div id="carrinho-total" class="carrinho-total"></div>
+            </div>
+            <div class="modal-footer">
+                <div class="carrinho-botoes">
+                    <button class="btn-continuar" onclick="fecharCarrinho()">Continuar Comprando</button>
+                    <button class="btn-whatsapp" onclick="finalizarCompraWhatsApp()">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </button>
+                </div>
+                <p class="text-muted mt-3 small">
+                    <i class="fas fa-info-circle"></i> Ao finalizar, você será direcionado ao WhatsApp para confirmar sua compra.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificação -->
+    <div class="notificacao" id="notificacao"></div>
+
+    <!-- Footer -->
+    <section id="contatos">
+        <footer class="footer bg-dark text-black pt-5 pb-4">
+            <div class="container">
+                <div class="row">
+                    <!-- Sobre Nós -->
+                    <div class="col-lg-4 col-md-6 mb-4 mb-md-0 text-center">
+                        <h5 class="text-uppercase mb-4" style="text-align: center;">M&R Shoes</h5>
+                        <p>
+                            <i class="fas fa-map-marker-alt me-2"></i> Três Lagoas - MS, Brasil
+                        </p>
+                        <p class="mb-0">
+                            Conforto e elegância para todos os momentos.
+                        </p>
+                    </div>
+
+                    <!-- Contato -->
+                    <div class="col-lg-4 col-md-6 mb-4 mb-md-0 text-center">
+                        <h5 class="text-uppercase mb-4" style="text-align: center;">Contato</h5>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <a href="https://wa.me/5567992570519?text=Olá, visitei seu site e tenho interesse em seus sapatos!" 
+                                class="text-black text-decoration-none">
+                                    <i class="fab fa-whatsapp me-2"></i> (67) 99257-0519
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Redes Sociais -->
+                    <div class="col-lg-4 col-md-12 text-center">
+                        <h5 class="text-uppercase mb-4" style="text-align: center;">Redes Sociais</h5>
+                        <div class="social-links">
+                            <a href="https://www.instagram.com/mr.shoes.br/" 
+                            class="text-black me-3 fs-5" 
+                            target="_blank" 
+                            aria-label="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="https://wa.me/5567992570519?text=Olá, visitei seu site e tenho interesse em seus sapatos!" 
+                            class="text-black me-3 fs-5" 
+                            target="_blank" 
+                            aria-label="WhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Direitos Autorais -->
+                <div class="row mt-4">
+                    <div class="col-12 text-center">
+                        <hr class="mb-4 bg-light">
+                        <p class="mb-0 small">
+                            &copy; 2025 M&R Shoes. Todos os direitos reservados. 
+                            <span class="d-block d-sm-inline mt-2 mt-sm-0">
+                                Desenvolvido por <a href="https://www.instagram.com/esterpazini__/" class="text-black">Ester Pacheco</a> - (67) 99280-5121
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </section>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="estoque/estoque.js"></script>
+    <script>
+        // Variáveis globais
+        let estoque = [];
+        let carrinho = JSON.parse(localStorage.getItem('carrinho')) || [];
+        
+        // Função para carregar produtos
+        async function carregarProdutos() {
+            try {
+                await initDB();
+                await carregarEstoque();
+                console.log("Produtos carregados:", estoque);
+                atualizarListaProdutos();
+                atualizarContadorCarrinho();
+            } catch (error) {
+                console.error("Erro ao carregar produtos:", error);
+            }
+        }
+        
+        // Função para mostrar produtos
+        function atualizarListaProdutos(estoqueFiltrado = null) {
+            const listaSapatos = document.getElementById('listaSapatos');
+            const itensParaExibir = estoqueFiltrado !== null ? estoqueFiltrado : estoque;
+            
+            listaSapatos.innerHTML = '';
+            
+            if (!itensParaExibir || itensParaExibir.length === 0) {
+                listaSapatos.innerHTML = `
+                    <div class="col-12">
+                        <div class="alert alert-info text-center py-4">
+                            Nenhum sapato encontrado.
+                        </div>
+                    </div>`;
+                return;
+            }
+            
+            itensParaExibir.forEach(sapato => {
+                const card = document.createElement('div');
+                card.className = 'col-md-4 col-lg-3 mb-4';
+                card.innerHTML = `
+                    <div class="card h-100">
+                        <img src="${sapato.foto || 'https://via.placeholder.com/200'}" 
+                            class="card-img-top" alt="${sapato.modelo}" 
+                            style="height: 200px; object-fit: cover;">
+                        <div class="card-body">
+                            <h5 class="card-title">${sapato.modelo || "Modelo desconhecido"}</h5>
+                            <p class="card-text">
+                                <strong>Cor:</strong> ${sapato.cor || "Não informada"}<br>
+                                <strong>Numeração:</strong> ${sapato.numeracao || "N/I"}<br>
+                                <strong>Valor:</strong> R$ ${sapato.valor?.toFixed(2) || "0.00"}
+                            </p>
+                            ${sapato.quantidade == 0 ? 
+                                '<div class="alert alert-warning mb-0">Produto esgotado</div>' : 
+                                `<p class="card-text"><small>Disponível: ${sapato.quantidade || 0} unidades</small></p>`
+                            }
+                        </div>
+                        <div class="card-footer bg-white">
+                            <button class="btn btn-primary w-100 ${sapato.quantidade == 0 ? 'disabled' : ''}" 
+                                onclick="adicionarAoCarrinho('${sapato.id}')">
+                                <i class="fas fa-shopping-cart me-2"></i>Comprar
+                            </button>
+                        </div>
+                    </div>`;
+                listaSapatos.appendChild(card);
+            });
+        }
+        
+        // Funções do Carrinho
+        function adicionarAoCarrinho(idProduto) {
+            const produto = estoque.find(p => p.id === idProduto);
+            if (!produto) return;
+            
+            const itemNoCarrinho = carrinho.find(item => item.id === idProduto);
+            
+            if (itemNoCarrinho) {
+                if (itemNoCarrinho.quantidade < produto.quantidade) {
+                    itemNoCarrinho.quantidade += 1;
+                    mostrarNotificacao(`${produto.modelo} - Quantidade atualizada: ${itemNoCarrinho.quantidade}`);
+                } else {
+                    mostrarNotificacao('Quantidade máxima disponível atingida!', 'error');
+                    return;
+                }
+            } else {
+                carrinho.push({
+                    id: produto.id,
+                    modelo: produto.modelo,
+                    cor: produto.cor,
+                    numeracao: produto.numeracao,
+                    valor: produto.valor,
+                    quantidade: 1,
+                    foto: produto.foto
+                });
+                mostrarNotificacao(`${produto.modelo} adicionado ao carrinho!`);
+            }
+            
+            salvarCarrinho();
+            atualizarContadorCarrinho();
+        }
+        
+        function salvarCarrinho() {
+            localStorage.setItem('carrinho', JSON.stringify(carrinho));
+        }
+        
+        function atualizarContadorCarrinho() {
+            const totalItens = carrinho.reduce((total, item) => total + item.quantidade, 0);
+            document.getElementById('contadorCarrinho').textContent = totalItens;
+        }
+        
+        function mostrarNotificacao(mensagem, tipo = 'success') {
+            const notificacao = document.getElementById('notificacao');
+            notificacao.textContent = mensagem;
+            notificacao.style.display = 'block';
+            notificacao.style.backgroundColor = tipo === 'success' ? '#28a745' : '#dc3545';
+            
+            setTimeout(() => {
+                notificacao.style.display = 'none';
+            }, 3000);
+        }
+        
+        // Funções para abrir/fechar o carrinho
+        function abrirCarrinho() {
+            const modal = document.getElementById('modalCarrinho');
+            modal.classList.add('active');
+            atualizarCarrinhoModal();
+        }
+        
+        function fecharCarrinho() {
+            const modal = document.getElementById('modalCarrinho');
+            modal.classList.remove('active');
+        }
+        
+        // Atualiza o conteúdo do modal do carrinho
+        function atualizarCarrinhoModal() {
+            const carrinhoItens = document.getElementById('carrinho-itens');
+            const carrinhoVazio = document.getElementById('carrinho-vazio');
+            const carrinhoTotal = document.getElementById('carrinho-total');
+            
+            if (carrinho.length === 0) {
+                carrinhoVazio.style.display = 'block';
+                carrinhoItens.innerHTML = '';
+                carrinhoTotal.innerHTML = '';
+                return;
+            }
+            
+            carrinhoVazio.style.display = 'none';
+            carrinhoItens.innerHTML = '';
+            
+            let total = 0;
+            
+            carrinho.forEach(item => {
+                const produtoEstoque = estoque.find(p => p.id === item.id);
+                const maxDisponivel = produtoEstoque ? produtoEstoque.quantidade : 0;
+                const subtotal = item.valor * item.quantidade;
+                total += subtotal;
+                
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'carrinho-item';
+                itemDiv.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <img src="${item.foto || 'https://via.placeholder.com/50'}" 
+                            width="50" height="50" style="object-fit: cover; margin-right: 15px;">
+                        <div class="carrinho-item-info">
+                            <h6 class="mb-1">${item.modelo}</h6>
+                            <small class="text-muted">Cor: ${item.cor} | Nº: ${item.numeracao}</small>
+                            <p class="mb-0">R$ ${item.valor.toFixed(2)}</p>
+                        </div>
+                    </div>
+                    <div class="carrinho-item-quantidade">
+                        <button onclick="alterarQuantidade('${item.id}', -1)">-</button>
+                        <span>${item.quantidade}</span>
+                        <button onclick="alterarQuantidade('${item.id}', 1)" ${item.quantidade >= maxDisponivel ? 'disabled' : ''}>+</button>
+                        <button class="btn-remover" onclick="removerDoCarrinho('${item.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>`;
+                
+                carrinhoItens.appendChild(itemDiv);
+            });
+            
+            carrinhoTotal.innerHTML = `Total: R$ ${total.toFixed(2)}`;
+        }
+        
+        function alterarQuantidade(idProduto, mudanca) {
+            const item = carrinho.find(item => item.id === idProduto);
+            if (!item) return;
+            
+            const produtoEstoque = estoque.find(p => p.id === idProduto);
+            
+            if (mudanca === 1) {
+                if (item.quantidade < produtoEstoque.quantidade) {
+                    item.quantidade += 1;
+                } else {
+                    mostrarNotificacao('Quantidade máxima disponível atingida!', 'error');
+                    return;
+                }
+            } else if (mudanca === -1) {
+                if (item.quantidade > 1) {
+                    item.quantidade -= 1;
+                } else {
+                    removerDoCarrinho(idProduto);
+                    return;
+                }
+            }
+            
+            salvarCarrinho();
+            atualizarContadorCarrinho();
+            atualizarCarrinhoModal();
+        }
+        
+        function removerDoCarrinho(idProduto) {
+            carrinho = carrinho.filter(item => item.id !== idProduto);
+            salvarCarrinho();
+            atualizarContadorCarrinho();
+            atualizarCarrinhoModal();
+            mostrarNotificacao('Item removido do carrinho');
+        }
+        
+        function finalizarCompraWhatsApp() {
+            if (carrinho.length === 0) {
+                mostrarNotificacao('Seu carrinho está vazio!', 'error');
+                return;
+            }
+            
+            const total = carrinho.reduce((sum, item) => sum + (item.valor * item.quantidade), 0);
+            
+            // Monta a mensagem para o WhatsApp
+            let mensagem = '';
+            
+            carrinho.forEach(item => {
+                mensagem += `- ${item.modelo} (Cor: ${item.cor}, Nº: ${item.numeracao}) - ${item.quantidade}x R$ ${item.valor.toFixed(2)}\n`;
+            });
+            
+            mensagem += `\n*Total: R$ ${total.toFixed(2)}*`;
+            mensagem += '\n\nPor favor, confirme a disponibilidade dos produtos.';
+            
+            // Codifica a mensagem para URL
+            const mensagemCodificada = encodeURIComponent(mensagem);
+            
+            // Redireciona para o WhatsApp
+            window.open(`https://wa.me/5567992570519?text=ol%C3%A1%2C%20visitei%20seu%20site%20e%20tenho%20interesse%20em%20comprar%20seus%20sapatos!${mensagemCodificada}`, '_blank');
+            
+            // Limpa o carrinho após a compra
+            carrinho = [];
+            salvarCarrinho();
+            atualizarContadorCarrinho();
+            atualizarCarrinhoModal();
+            fecharCarrinho();
+        }
+        
+        // Event listeners
+        document.getElementById('btnAbrirCarrinho').addEventListener('click', function(e) {
+            e.preventDefault();
+            abrirCarrinho();
+        });
+        
+        // Fechar modal ao clicar fora
+        document.getElementById('modalCarrinho').addEventListener('click', function(e) {
+            if (e.target === this) {
+                fecharCarrinho();
+            }
+        });
+
+        function filtrarEstoque() {
+            const modelo = document.getElementById('filtro-modelo').value.toLowerCase();
+            const cor = document.getElementById('filtro-cor').value.toLowerCase();
+            const numeracao = document.getElementById('filtro-numeracao').value;
+
+            const estoqueFiltrado = estoque.filter(sapato => {
+                const matchModelo = modelo ? sapato.modelo.toLowerCase().includes(modelo) : true;
+                const matchCor = cor ? sapato.cor.toLowerCase().includes(cor) : true;
+                const matchNumeracao = numeracao ? sapato.numeracao === numeracao : true;
+
+                return matchModelo && matchCor && matchNumeracao;
+            });
+
+            atualizarListaProdutos(estoqueFiltrado); // Atualiza a lista com os itens filtrados
+        }
+
+        function limparFiltros() {
+            document.getElementById('filtro-modelo').value = '';
+            document.getElementById('filtro-cor').value = '';
+            document.getElementById('filtro-numeracao').value = '';
+            atualizarListaProdutos(); // Mostra todo o estoque novamente
+        }
+        
+        // Inicializa o carregamento dos produtos quando a página carrega
+        document.addEventListener('DOMContentLoaded', carregarProdutos);
+    </script>
+</body>
+</html>
