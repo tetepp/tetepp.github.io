@@ -148,9 +148,6 @@
             }
         }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
 </head>
 <body>
     <div class="login-container">
@@ -168,7 +165,10 @@
             
             <div class="input-group">
                 <label for="usuario">Usuário</label>
-                <input type="email" id="email" placeholder="Digite seu email" required>
+                <select id="usuario" required>
+                    <option value="" disabled selected>Selecione seu usuário</option>
+                    <option value="gerente">Gerente de Loja</option>
+                </select>
             </div>
             
             <div class="input-group">
@@ -183,59 +183,48 @@
             &copy; 2025 M&R Shoes. Todos os direitos reservados.
         </div>
     </div>
+
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyCj0wBmWPcZqhR4aHnhJj1euYbVRiZTW_I",
-            authDomain: "mr-shoes-ester.firebaseapp.com",
-            projectId: "mr-shoes-ester",
-            storageBucket: "mr-shoes-ester.firebasestorage.app",
-            messagingSenderId: "1095547696867",
-            appId: "1:1095547696867:web:e035b012e1d7d6d64437d6",
-            measurementId: "G-D338V7HSG4"
-        };
-
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-
-        // Verificação única ao carregar a página
-        firebase.auth().onAuthStateChanged((user) => {
-            if (user) {
-                // Se já está autenticado e na página de login, redireciona
-                if (window.location.pathname.endsWith('login.html')) {
-                    console.log('Redirecionando para estoque.html');
-                    window.location.href = 'estoque.html';
-                }
-            }
-        });
-
-        // Função de login modificada
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+        e.preventDefault();
+        
+        const usuario = document.getElementById('usuario').value;
+        const senha = document.getElementById('senha').value;
+        
+        try {   
+            const response = await fetch('../api/auth.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: usuario,
+                    password: senha
+                })
+            });
             
-            const email = document.getElementById('email').value;
-            const senha = document.getElementById('senha').value;
-            const btn = document.querySelector('.btn-login');
+            const data = await response.json();
             
-            btn.disabled = true;
-            btn.textContent = 'Autenticando...';
-            
-            try {
-                await firebase.auth().signInWithEmailAndPassword(email, senha);
-                // Redirecionamento direto após login bem-sucedido
+            if (data.success) {
+                // Salva o token/localStorage e redireciona
+                localStorage.setItem('user', JSON.stringify(data.user));
                 window.location.href = 'estoque.html';
+            } else {
+                showError();
+            }
             } catch (error) {
-                document.getElementById('errorMessage').textContent = 
-                    error.code === 'auth/wrong-password' ? 'Senha incorreta!' :
-                    error.code === 'auth/user-not-found' ? 'Usuário não encontrado!' :
-                    'Erro ao fazer login';
-                document.getElementById('errorMessage').style.display = 'block';
-                document.getElementById('senha').value = '';
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'Entrar';
+                showError();
             }
         });
+
+        function showError() {
+            document.getElementById('errorMessage').style.display = 'block';
+            document.getElementById('senha').value = '';
+            document.getElementById('senha').style.animation = 'shake 0.5s';
+            setTimeout(() => {
+                document.getElementById('senha').style.animation = '';
+            }, 500);
+        }
     </script>
 </body>
 </html>

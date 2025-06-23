@@ -8,9 +8,6 @@
     <link rel="stylesheet" href="estilo.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <title>M&R Shoes - Estoque</title>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
 </head>
 <body>
     <section id="produtos">
@@ -206,29 +203,8 @@
                 </div>
                 </div>
             </div>
+
+
         <script src="estoque.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
-        <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
-        <script>
-            const firebaseConfig = {
-                apiKey: "AIzaSyCj0wBmWPcZqhR4aHnhJj1euYbVRiZTW_I",
-                authDomain: "mr-shoes-ester.firebaseapp.com",
-                projectId: "mr-shoes-ester",
-                storageBucket: "mr-shoes-ester.firebasestorage.app",
-                messagingSenderId: "1095547696867",
-                appId: "1:1095547696867:web:e035b012e1d7d6d64437d6",
-                measurementId: "G-D338V7HSG4"
-            };
-
-            if (!firebase.apps.length) {
-                firebase.initializeApp(firebaseConfig);
-            }
-
-            firebase.auth().onAuthStateChanged((user) => {
-                if (!user) {
-                    window.location.href = 'login.html';
-                }
-            });
-        </script>
     </body>
 </html>
