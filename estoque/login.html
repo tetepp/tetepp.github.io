@@ -185,46 +185,46 @@
     </div>
 
     <script>
-        document.getElementById('loginForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        const usuario = document.getElementById('usuario').value;
-        const senha = document.getElementById('senha').value;
-        
-        try {   
-            const response = await fetch('../api/auth.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: usuario,
-                    password: senha
-                })
-            });
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
             
-            const data = await response.json();
+            // Obtém os valores do formulário
+            const usuario = document.getElementById('usuario').value;
+            const senha = document.getElementById('senha').value;
             
-            if (data.success) {
-                // Salva o token/localStorage e redireciona
-                localStorage.setItem('user', JSON.stringify(data.user));
+            // Valores válidos (em produção isso seria no servidor)
+            const usuariosValidos = {
+                "gerente": "mara",
+            };
+            
+            // Verifica as credenciais
+            if (usuariosValidos[usuario] && usuariosValidos[usuario] === senha) {
+                // Redireciona para estoque.html
                 window.location.href = 'estoque.html';
             } else {
-                showError();
-            }
-            } catch (error) {
-                showError();
+                // Mostra mensagem de erro
+                document.getElementById('errorMessage').style.display = 'block';
+                
+                document.getElementById('senha').value = '';
+                
+                // Adiciona animação de erro
+                document.getElementById('senha').style.animation = 'shake 0.5s';
+                setTimeout(() => {
+                    document.getElementById('senha').style.animation = '';
+                }, 500);
             }
         });
-
-        function showError() {
-            document.getElementById('errorMessage').style.display = 'block';
-            document.getElementById('senha').value = '';
-            document.getElementById('senha').style.animation = 'shake 0.5s';
-            setTimeout(() => {
-                document.getElementById('senha').style.animation = '';
-            }, 500);
-        }
+        
+        // Adiciona estilos de animação
+        const style = document.createElement('style');
+        style.innerHTML = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                25% { transform: translateX(-5px); }
+                75% { transform: translateX(5px); }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
